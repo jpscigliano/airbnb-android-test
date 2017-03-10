@@ -19,7 +19,7 @@ public class MapFragment extends Fragment {
     public static final String TAG = MapFragment.class.getName();
 
 
-    public Fragment newInstace() {
+    public static Fragment newInstace() {
         MapFragment fragment = new MapFragment();
         return fragment;
     }

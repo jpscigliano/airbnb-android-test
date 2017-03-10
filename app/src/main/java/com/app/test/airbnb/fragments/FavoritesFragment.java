@@ -19,7 +19,7 @@ public class FavoritesFragment extends Fragment {
     public static final String TAG = FavoritesFragment.class.getName();
 
 
-    public Fragment newInstace() {
+    public static Fragment newInstace() {
         FavoritesFragment fragment = new FavoritesFragment();
         return fragment;
     }

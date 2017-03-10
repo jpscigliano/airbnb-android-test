@@ -13,6 +13,9 @@ import android.view.MenuItem;
 import com.app.test.airbnb.R;
 import com.app.test.airbnb.activities.base.BaseAppCompatActivity;
 import com.app.test.airbnb.activities.base.NavigationCallback;
+import com.app.test.airbnb.fragments.FavoritesFragment;
+import com.app.test.airbnb.fragments.HomeFragment;
+import com.app.test.airbnb.fragments.MapFragment;
 
 public class MainActivity extends BaseAppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationCallback {
@@ -73,16 +76,16 @@ public class MainActivity extends BaseAppCompatActivity
 
     @Override
     public void goToHome() {
-
+        start(HomeFragment.newInstace(), false, R.id.content_frame);
     }
 
     @Override
     public void goToFavorites() {
-
+        start(FavoritesFragment.newInstace(), false, R.id.content_frame);
     }
 
     @Override
     public void goToMap() {
-
+        start(MapFragment.newInstace(), false, R.id.content_frame);
     }
 }
