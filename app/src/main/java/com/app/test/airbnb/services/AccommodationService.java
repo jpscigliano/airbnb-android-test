@@ -2,7 +2,7 @@ package com.app.test.airbnb.services;
 
 import android.util.Log;
 
-import com.app.test.airbnb.model.Accomodation;
+import com.app.test.airbnb.model.Accommodation;
 import com.app.test.airbnb.services.response.SearchDataResponse;
 import com.app.test.airbnb.services.response.data.ListingDataResult;
 
@@ -10,6 +10,9 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -23,19 +26,64 @@ public class AccommodationService extends BaseService {
     public AccommodationApi mApi;
     private final static String cliente_id = "3092nxybyb0otqw18e8nh5nty";
     private final static String formatListing = "v1_legacy_for_p3";
+    private Realm realm = Realm.getInstance(new RealmConfiguration.Builder().build());
 
     public interface SearchAccomodationListListener {
-        void onAccomodationListResult(ArrayList<Accomodation> mAccomodations);
+        void onAccomodationListResult(ArrayList<Accommodation> mAccommodations);
     }
 
     public interface FetchAccomodationistener {
-        void onAccomodationResult(Accomodation mAccomodations);
+        void onAccomodationResult(Accommodation mAccomodations);
     }
 
     @Inject
     public AccommodationService() {
         super();
         mApi = buildApi(AccommodationApi.class);
+    }
+
+
+    public void saveAccomodations(ArrayList<Accommodation> accommodations) {
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(accommodations);
+        realm.commitTransaction();
+    }
+
+    public void deleteSavedAccomodations() {
+        realm.beginTransaction();
+        realm.delete(Accommodation.class);
+        realm.commitTransaction();
+
+    }
+
+    public ArrayList<Accommodation> getSavedAccomodations() {
+        realm.beginTransaction();
+        RealmResults<Accommodation> realmResult = realm.where(Accommodation.class).findAll();
+        realmResult.toArray();
+        ArrayList<Accommodation> accommodations = new ArrayList<>();
+        accommodations.addAll(realm.copyFromRealm(realmResult));
+        realm.commitTransaction();
+        return accommodations;
+    }
+
+    public void saveAccommodation(Accommodation accommodation) {
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(accommodation);
+        realm.beginTransaction();
+    }
+
+    public void deleteSavedAccommodation(Accommodation accommodation) {
+        realm.beginTransaction();
+        realm.where(Accommodation.class).equalTo("id", accommodation.getId()).findFirst().deleteFromRealm();
+        realm.commitTransaction();
+    }
+
+    public Accommodation getSavedAccommodation(int accomodationId) {
+        Accommodation mAccommodation;
+        realm.beginTransaction();
+        mAccommodation = realm.where(Accommodation.class).equalTo("id", accomodationId).findFirst();
+        realm.commitTransaction();
+        return mAccommodation;
     }
 
     public void searchAccomodations(final SearchAccomodationListListener listener) {
@@ -46,10 +94,11 @@ public class AccommodationService extends BaseService {
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(response -> {
 
-                    ArrayList<Accomodation> mAccomodatinos = new ArrayList<>();
+                    ArrayList<Accommodation> mAccomodatinos = new ArrayList<>();
                     for (SearchDataResponse<ListingDataResult> searchresult : response.searchData) {
-                        mAccomodatinos.add(new Accomodation(searchresult.listingData));
+                        mAccomodatinos.add(new Accommodation(searchresult.listingData));
                     }
+                    saveAccomodations(mAccomodatinos);
                     listener.onAccomodationListResult(mAccomodatinos);
                 }, throwable -> {
 
@@ -62,8 +111,9 @@ public class AccommodationService extends BaseService {
                 subscribeOn(Schedulers.newThread()).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(response -> {
-                    Accomodation mAccomodation = new Accomodation(response);
-                    listener.onAccomodationResult(mAccomodation);
+                    Accommodation mAccommodation = new Accommodation(response);
+                    saveAccommodation(mAccommodation);
+                    listener.onAccomodationResult(mAccommodation);
                 }, throwable -> {
                     Log.d("Response", "Response Error: " + throwable.toString());
                 });

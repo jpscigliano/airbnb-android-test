@@ -8,10 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.app.test.airbnb.R;
+
 import com.app.test.airbnb.injections.DaggerServiceComponent;
 import com.app.test.airbnb.injections.ServiceComponent;
 import com.app.test.airbnb.injections.ServiceModule;
-import com.app.test.airbnb.model.Accomodation;
+import com.app.test.airbnb.model.Accommodation;
 import com.app.test.airbnb.services.AccommodationService;
 
 import java.util.ArrayList;
@@ -62,11 +63,11 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        accommodationService.searchAccomodations(new AccommodationService.SearchAccomodationListListener() {
-            @Override
-            public void onAccomodationListResult(ArrayList<Accomodation> mAccomodations) {
 
-            }
+        accommodationService.getSavedAccomodations();
+
+        accommodationService.searchAccomodations(mAccommodations -> {
+
         });
     }
 }
