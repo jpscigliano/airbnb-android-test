@@ -46,7 +46,7 @@ public class AccommodationService extends BaseService {
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(response -> {
 
-                    ArrayList<Accomodation> mAccomodatinos = new ArrayList<Accomodation>();
+                    ArrayList<Accomodation> mAccomodatinos = new ArrayList<>();
                     for (SearchDataResponse<ListingDataResult> searchresult : response.searchData) {
                         mAccomodatinos.add(new Accomodation(searchresult.listingData));
                     }
