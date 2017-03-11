@@ -1,5 +1,6 @@
 package com.app.test.airbnb.fragments;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,17 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.app.test.airbnb.R;
+import com.app.test.airbnb.activities.AccommodationActivity;
 import com.app.test.airbnb.adapters.AccommodationsAdapter;
 
-import com.app.test.airbnb.injections.DaggerServiceComponent;
-import com.app.test.airbnb.injections.ServiceComponent;
-import com.app.test.airbnb.injections.ServiceModule;
-import com.app.test.airbnb.models.Accommodation;
 import com.app.test.airbnb.services.AccommodationService;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,14 +27,15 @@ public class HomeFragment extends Fragment {
 
     public static final String TAG = HomeFragment.class.getName();
 
-    @Inject
-    AccommodationService accommodationService;
+
+
 
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
     private AccommodationsAdapter mAccommodationAdapter;
 
+    private ProgressDialog progressDialog;
     public static Fragment newInstace() {
         HomeFragment fragment = new HomeFragment();
         return fragment;
@@ -50,13 +46,6 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // region Dagger
-        ServiceComponent component = DaggerServiceComponent.
-                builder().
-                serviceModule(new ServiceModule()).
-                build();
-        accommodationService = component.provideAccommodationService();
-        //endregion
 
     }
 
@@ -72,10 +61,27 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        accommodationService.searchAccomodations(mAccommodations -> {
-            mAccommodationAdapter = new AccommodationsAdapter(mAccommodations, HomeFragment.this.getContext());
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage(getString(R.string.searching));
+        progressDialog.show();
+
+        AccommodationService.getInstance().searchAccomodations(mAccommodations -> {
+            mAccommodationAdapter = new AccommodationsAdapter(mAccommodations, HomeFragment.this.getContext(), mAccommodation -> {
+                progressDialog.setMessage(getString(R.string.loadingAccommodation));
+                progressDialog.show();
+
+                AccommodationService.getInstance().fetchAccomodationById(mAccommodation.getId(), mAccomodations -> {
+                    AccommodationActivity.start(mAccommodation, getActivity());
+                    progressDialog.dismiss();
+                });
+
+            });
             mRecyclerView.setAdapter(mAccommodationAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(HomeFragment.this.getContext()));
+            progressDialog.dismiss();
         });
     }
+
+
 }

@@ -18,23 +18,33 @@ import com.app.test.airbnb.fragments.FavoritesFragment;
 import com.app.test.airbnb.fragments.HomeFragment;
 import com.app.test.airbnb.fragments.MapFragment;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends BaseAppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationCallback {
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
+
+
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         goToHome();
     }
@@ -86,18 +96,19 @@ public class MainActivity extends BaseAppCompatActivity
     @Override
     public void goToHome() {
         setTitle(R.string.home);
-        start(HomeFragment.newInstace(), false, R.id.content_frame,HomeFragment.TAG);
+        start(HomeFragment.newInstace(), false, R.id.content_frame, HomeFragment.TAG);
     }
 
     @Override
     public void goToFavorites() {
-        setTitle(R.string.map);
-        start(FavoritesFragment.newInstace(), false, R.id.content_frame,FavoritesFragment.TAG);
+
+        setTitle(R.string.favorites);
+        start(FavoritesFragment.newInstace(), false, R.id.content_frame, FavoritesFragment.TAG);
     }
 
     @Override
     public void goToMap() {
-        setTitle(R.string.favorites);
-        start(MapFragment.newInstace(), false, R.id.content_frame,MapFragment.TAG);
+        setTitle(R.string.map);
+        start(MapFragment.newInstace(), false, R.id.content_frame, MapFragment.TAG);
     }
 }

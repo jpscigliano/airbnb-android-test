@@ -13,5 +13,6 @@ public class SearchDataResponse {
 
     @SerializedName("pricing_quote")
     public PricingDataResult pricingData;
+
 }
 

@@ -7,10 +7,7 @@ import com.app.test.airbnb.services.response.SearchDataResponse;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -22,30 +19,60 @@ import rx.schedulers.Schedulers;
 
 public class AccommodationService extends BaseService {
 
+    private static AccommodationService singleton;
+
     public AccommodationApi mApi;
     private final static String cliente_id = "3092nxybyb0otqw18e8nh5nty";
     private final static String formatListing = "v1_legacy_for_p3";
-    private Realm realm = Realm.getInstance(new RealmConfiguration.Builder().build());
+    private Realm realm;
 
-    public interface SearchAccomodationListListener {
-        void onAccomodationListResult(ArrayList<Accommodation> mAccommodations);
+
+    public interface SearchAccommodationListListener {
+        void onAccommodationListResult(ArrayList<Accommodation> mAccommodations);
     }
 
-    public interface FetchAccomodationistener {
-        void onAccomodationResult(Accommodation mAccomodations);
+    public interface FetchAccommodationistener {
+        void onAccommodationResult(Accommodation mAccomodations);
     }
 
-    @Inject
-    public AccommodationService() {
+    public static AccommodationService getInstance() {
+        if (singleton == null) {
+            singleton = new AccommodationService();
+        }
+        return singleton;
+    }
+
+    private AccommodationService() {
         super();
         mApi = buildApi(AccommodationApi.class);
+        realm = Realm.getDefaultInstance();
     }
 
 
     public void saveAccomodations(ArrayList<Accommodation> accommodations) {
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(accommodations);
-        realm.commitTransaction();
+
+        boolean isnew=true;
+        for (Accommodation mAccomodation : accommodations) {
+            for (Accommodation mSavedAccomodation : getSavedAccomodations()) {
+                if (mAccomodation.getId() == mSavedAccomodation.getId()) {
+                    realm.beginTransaction();
+                    mAccomodation.setFavorite(mSavedAccomodation.isFavorite());
+                    realm.copyToRealmOrUpdate(mAccomodation);
+                    realm.commitTransaction();
+                    isnew=false;
+                    break;
+                }
+            }
+            if(isnew){
+                //Lets save so it could work offline inthe future.
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(mAccomodation);
+                realm.commitTransaction();
+            }
+
+        }
+
+
     }
 
     public void deleteSavedAccomodations() {
@@ -58,7 +85,15 @@ public class AccommodationService extends BaseService {
     public ArrayList<Accommodation> getSavedAccomodations() {
         realm.beginTransaction();
         RealmResults<Accommodation> realmResult = realm.where(Accommodation.class).findAll();
-        realmResult.toArray();
+        ArrayList<Accommodation> accommodations = new ArrayList<>();
+        accommodations.addAll(realm.copyFromRealm(realmResult));
+        realm.commitTransaction();
+        return accommodations;
+    }
+
+    public ArrayList<Accommodation> getFavoritesSavedAccomodations() {
+        realm.beginTransaction();
+        RealmResults<Accommodation> realmResult = realm.where(Accommodation.class).equalTo("isFavorite", true).findAll();
         ArrayList<Accommodation> accommodations = new ArrayList<>();
         accommodations.addAll(realm.copyFromRealm(realmResult));
         realm.commitTransaction();
@@ -68,8 +103,16 @@ public class AccommodationService extends BaseService {
     public void saveAccommodation(Accommodation accommodation) {
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(accommodation);
-        realm.beginTransaction();
+        realm.commitTransaction();
     }
+
+    public void saveFavoriteAccommodation(Accommodation mAccommodation, boolean isFavorite) {
+        realm.beginTransaction();
+        mAccommodation.setFavorite(isFavorite);
+        realm.copyToRealmOrUpdate(mAccommodation);
+        realm.commitTransaction();
+    }
+
 
     public void deleteSavedAccommodation(Accommodation accommodation) {
         realm.beginTransaction();
@@ -85,7 +128,7 @@ public class AccommodationService extends BaseService {
         return mAccommodation;
     }
 
-    public void searchAccomodations(final SearchAccomodationListListener listener) {
+    public void searchAccomodations(final SearchAccommodationListListener listener) {
 
 
         mApi.getAccommodationsByClientId(cliente_id, "Buenos Aires", null, null, 30).
@@ -101,21 +144,24 @@ public class AccommodationService extends BaseService {
                         mAccomodations.add(mAccomodation);
                     }
                     saveAccomodations(mAccomodations);
-                    listener.onAccomodationListResult(mAccomodations);
+                    listener.onAccommodationListResult(mAccomodations);
                 }, throwable -> {
 
                     Log.d("Response", "Response Error: " + throwable.toString());
                 });
     }
 
-    public void fetchAccomodationById(int id, FetchAccomodationistener listener) {
+    public void fetchAccomodationById(int id, FetchAccommodationistener listener) {
         mApi.getAccommodationById(id, cliente_id, formatListing).
                 subscribeOn(Schedulers.newThread()).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(response -> {
-                    Accommodation mAccommodation = new Accommodation(response);
+                    Accommodation mAccommodation = new Accommodation(response.listing);
                     saveAccommodation(mAccommodation);
-                    listener.onAccomodationResult(mAccommodation);
+                    if (listener != null) {
+                        listener.onAccommodationResult(mAccommodation);
+                    }
+
                 }, throwable -> {
                     Log.d("Response", "Response Error: " + throwable.toString());
                 });

@@ -39,6 +39,10 @@ public class ListingDataResult {
     public float bathroom;
     @SerializedName("beds")
     public int beds;
+    @SerializedName("bedroom")
+    public int bedroom;
+    @SerializedName("guests_included")
+    public int guest;
 
 
 }

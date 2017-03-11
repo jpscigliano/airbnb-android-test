@@ -22,12 +22,19 @@ import butterknife.ButterKnife;
  */
 public class AccommodationsAdapter extends RecyclerView.Adapter<AccommodationsAdapter.AccommodationsViewHolder> {
 
+
+    public interface ItemSelecListener {
+        void onItemSelected(Accommodation mAccommodation);
+    }
+
     private ArrayList<Accommodation> mAccommodations;
     private Context mContext;
+    private final ItemSelecListener listener;
 
-    public AccommodationsAdapter(ArrayList<Accommodation> mAccommodations, Context mContext) {
+    public AccommodationsAdapter(ArrayList<Accommodation> mAccommodations, Context mContext, ItemSelecListener listener) {
         this.mAccommodations = mAccommodations;
         this.mContext = mContext;
+        this.listener = listener;
     }
 
     @Override
@@ -43,7 +50,7 @@ public class AccommodationsAdapter extends RecyclerView.Adapter<AccommodationsAd
                 .into(holder.image);
         holder.title.setText(mAccommodations.get(position).getName());
         holder.subTitle.setText(mAccommodations.get(position).getPropertyType());
-        holder.price.setText("" + mAccommodations.get(position).getPrice()+" "+mAccommodations.get(position).getCurrency());
+        holder.price.setText("" + mAccommodations.get(position).getPrice() + " " + mAccommodations.get(position).getCurrency());
     }
 
 
@@ -53,7 +60,7 @@ public class AccommodationsAdapter extends RecyclerView.Adapter<AccommodationsAd
     }
 
 
-    public class AccommodationsViewHolder extends RecyclerView.ViewHolder {
+    public class AccommodationsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.imageView)
         ImageView image;
         @BindView(R.id.textViewTitle)
@@ -67,6 +74,12 @@ public class AccommodationsAdapter extends RecyclerView.Adapter<AccommodationsAd
         public AccommodationsViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+           listener.onItemSelected(mAccommodations.get(getAdapterPosition()));
         }
     }
 }

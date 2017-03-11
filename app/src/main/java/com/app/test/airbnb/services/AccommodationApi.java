@@ -1,5 +1,7 @@
 package com.app.test.airbnb.services;
 
+import com.app.test.airbnb.models.Accommodation;
+import com.app.test.airbnb.services.response.AccommodationResponse;
 import com.app.test.airbnb.services.response.SearchAccomodationResponse;
 import com.app.test.airbnb.services.response.SearchDataResponse;
 import com.app.test.airbnb.services.response.data.ListingDataResult;
@@ -25,7 +27,7 @@ public interface AccommodationApi {
     );
 
     @GET("listings/{listing_id}")
-    Observable<ListingDataResult> getAccommodationById(
+    Observable<AccommodationResponse> getAccommodationById(
             @Path("listing_id") int listingId,
             @Query("client_id") String Id,
             @Query("_format") String format
