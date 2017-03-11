@@ -3,22 +3,26 @@ package com.app.test.airbnb.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.app.test.airbnb.R;
+import com.app.test.airbnb.adapters.AccommodationsAdapter;
 
 import com.app.test.airbnb.injections.DaggerServiceComponent;
 import com.app.test.airbnb.injections.ServiceComponent;
 import com.app.test.airbnb.injections.ServiceModule;
-import com.app.test.airbnb.model.Accommodation;
+import com.app.test.airbnb.models.Accommodation;
 import com.app.test.airbnb.services.AccommodationService;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -30,6 +34,11 @@ public class HomeFragment extends Fragment {
 
     @Inject
     AccommodationService accommodationService;
+
+    @BindView(R.id.recyclerView)
+    RecyclerView mRecyclerView;
+
+    private AccommodationsAdapter mAccommodationAdapter;
 
     public static Fragment newInstace() {
         HomeFragment fragment = new HomeFragment();
@@ -63,11 +72,10 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-        accommodationService.getSavedAccomodations();
-
         accommodationService.searchAccomodations(mAccommodations -> {
-
+            mAccommodationAdapter = new AccommodationsAdapter(mAccommodations, HomeFragment.this.getContext());
+            mRecyclerView.setAdapter(mAccommodationAdapter);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(HomeFragment.this.getContext()));
         });
     }
 }

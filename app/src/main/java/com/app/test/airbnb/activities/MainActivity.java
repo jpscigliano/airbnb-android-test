@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -35,6 +36,7 @@ public class MainActivity extends BaseAppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        goToHome();
     }
 
     @Override
@@ -52,19 +54,26 @@ public class MainActivity extends BaseAppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if (id == R.id.nav_home) {
-            setTitle(R.string.home);
+
+        if (id == R.id.nav_home && !isFragmentVisible(HomeFragment.TAG)) {
             goToHome();
-        } else if (id == R.id.nav_map) {
-            setTitle(R.string.map);
+        } else if (id == R.id.nav_map && !isFragmentVisible(MapFragment.TAG)) {
             goToMap();
-        } else if (id == R.id.nav_favorites) {
-            setTitle(R.string.favorites);
+        } else if (id == R.id.nav_favorites && !isFragmentVisible(FavoritesFragment.TAG)) {
             goToFavorites();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private boolean isFragmentVisible(String tag) {
+        Fragment fg = getSupportFragmentManager().findFragmentByTag(tag);
+        if (fg != null && fg.isVisible()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
@@ -76,16 +85,19 @@ public class MainActivity extends BaseAppCompatActivity
 
     @Override
     public void goToHome() {
-        start(HomeFragment.newInstace(), false, R.id.content_frame);
+        setTitle(R.string.home);
+        start(HomeFragment.newInstace(), false, R.id.content_frame,HomeFragment.TAG);
     }
 
     @Override
     public void goToFavorites() {
-        start(FavoritesFragment.newInstace(), false, R.id.content_frame);
+        setTitle(R.string.map);
+        start(FavoritesFragment.newInstace(), false, R.id.content_frame,FavoritesFragment.TAG);
     }
 
     @Override
     public void goToMap() {
-        start(MapFragment.newInstace(), false, R.id.content_frame);
+        setTitle(R.string.favorites);
+        start(MapFragment.newInstace(), false, R.id.content_frame,MapFragment.TAG);
     }
 }

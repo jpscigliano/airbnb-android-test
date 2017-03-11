@@ -94,4 +94,12 @@ public class Accommodation extends RealmObject {
     public float getBathroom() {
         return bathroom;
     }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
 }

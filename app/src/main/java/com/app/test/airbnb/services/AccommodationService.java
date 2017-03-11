@@ -2,9 +2,8 @@ package com.app.test.airbnb.services;
 
 import android.util.Log;
 
-import com.app.test.airbnb.model.Accommodation;
+import com.app.test.airbnb.models.Accommodation;
 import com.app.test.airbnb.services.response.SearchDataResponse;
-import com.app.test.airbnb.services.response.data.ListingDataResult;
 
 import java.util.ArrayList;
 
@@ -89,17 +88,20 @@ public class AccommodationService extends BaseService {
     public void searchAccomodations(final SearchAccomodationListListener listener) {
 
 
-        mApi.getAccommodationsByClientId(cliente_id, "Buenos Aires", null, null).
+        mApi.getAccommodationsByClientId(cliente_id, "Buenos Aires", null, null, 30).
                 subscribeOn(Schedulers.newThread()).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(response -> {
 
-                    ArrayList<Accommodation> mAccomodatinos = new ArrayList<>();
-                    for (SearchDataResponse<ListingDataResult> searchresult : response.searchData) {
-                        mAccomodatinos.add(new Accommodation(searchresult.listingData));
+                    ArrayList<Accommodation> mAccomodations = new ArrayList<>();
+                    for (SearchDataResponse searchresult : response.searchData) {
+                        Accommodation mAccomodation = new Accommodation(searchresult.listingData);
+                        mAccomodation.setPrice(searchresult.pricingData.price);
+                        mAccomodation.setCurrency(searchresult.pricingData.currency);
+                        mAccomodations.add(mAccomodation);
                     }
-                    saveAccomodations(mAccomodatinos);
-                    listener.onAccomodationListResult(mAccomodatinos);
+                    saveAccomodations(mAccomodations);
+                    listener.onAccomodationListResult(mAccomodations);
                 }, throwable -> {
 
                     Log.d("Response", "Response Error: " + throwable.toString());

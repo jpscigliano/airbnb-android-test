@@ -16,11 +16,13 @@ import rx.Observable;
 public interface AccommodationApi {
 
     @GET("search_results")
-    Observable<SearchAccomodationResponse<SearchDataResponse<ListingDataResult>>> getAccommodationsByClientId(
+    Observable<SearchAccomodationResponse<SearchDataResponse>> getAccommodationsByClientId(
             @Query("client_id") String Id,
             @Query("location") String location,
             @Query("user_lat") String lat,
-            @Query("user_lng") String lon);
+            @Query("user_lng") String lon,
+            @Query("_limit") int limit
+    );
 
     @GET("listings/{listing_id}")
     Observable<ListingDataResult> getAccommodationById(

@@ -9,7 +9,6 @@ import io.realm.Realm;
  */
 public class Airbnb extends Application {
 
-
     @Override
     public void onCreate() {
         super.onCreate();

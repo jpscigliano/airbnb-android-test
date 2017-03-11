@@ -3,13 +3,10 @@ package com.app.test.airbnb.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
-
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -18,9 +15,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public abstract class BaseService {
 
     private static final String HTTPS_DEV = "https://api.airbnb.com/v2/";
-
-
-    private String userAgent;
 
 
     public BaseService() {
@@ -33,19 +27,20 @@ public abstract class BaseService {
                 .create();
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        httpClient.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Interceptor.Chain chain) throws IOException {
-                Request original = chain.request();
-                Request request = original.newBuilder()
-                        .header("Accept", "application/json")
-                        .method(original.method(), original.body())
-                        .build();
+        httpClient.addInterceptor(chain -> {
+            Request original = chain.request();
+            Request request = original.newBuilder()
+                    .header("Accept", "application/json")
 
-                return chain.proceed(request);
-            }
+                    .method(original.method(), original.body())
+                    .build();
+
+            return chain.proceed(request);
         });
-        OkHttpClient client = httpClient.build();
+        OkHttpClient client = httpClient.
+                readTimeout(60, TimeUnit.SECONDS).
+                connectTimeout(60, TimeUnit.SECONDS).
+                build();
 
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -53,6 +48,7 @@ public abstract class BaseService {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(client)
+
                 .build();
 
         return retrofit.create(clazz);
