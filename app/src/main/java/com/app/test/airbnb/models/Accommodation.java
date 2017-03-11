@@ -1,4 +1,4 @@
-package com.app.test.airbnb.model;
+package com.app.test.airbnb.models;
 
 import com.app.test.airbnb.services.response.data.ListingDataResult;
 
