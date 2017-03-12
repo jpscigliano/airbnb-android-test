@@ -76,7 +76,7 @@ public class AccommodationActivity extends AppCompatActivity {
                       .setAction("Action", null).show();
           }
 
-            AccommodationService.getInstance().saveFavoriteAccommodation(mAccommodation,!mAccommodation.isFavorite());
+            AccommodationService.getInstance().saveOrUpdateFavoriteAccommodation(mAccommodation,!mAccommodation.isFavorite());
 
         });
 

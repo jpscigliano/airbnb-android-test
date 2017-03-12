@@ -49,22 +49,23 @@ public class AccommodationService extends BaseService {
     }
 
 
-    public void saveAccomodations(ArrayList<Accommodation> accommodations) {
+    public void saveorUpdateAccomodations(ArrayList<Accommodation> accommodations) {
 
-        boolean isnew=true;
+        boolean isnew = true;
         for (Accommodation mAccomodation : accommodations) {
             for (Accommodation mSavedAccomodation : getSavedAccomodations()) {
+                //Accomodatinos does not came comple is we call api/search. So Just Update if there is another complete accommodation
                 if (mAccomodation.getId() == mSavedAccomodation.getId()) {
                     realm.beginTransaction();
-                    mAccomodation.setFavorite(mSavedAccomodation.isFavorite());
-                    realm.copyToRealmOrUpdate(mAccomodation);
+                    mSavedAccomodation.update(mSavedAccomodation);
+                    realm.copyToRealmOrUpdate(mSavedAccomodation);
                     realm.commitTransaction();
-                    isnew=false;
+                    isnew = false;
                     break;
                 }
             }
-            if(isnew){
-                //Lets save so it could work offline inthe future.
+            if (isnew) {
+                //Lets save so it could work offline in the future.
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(mAccomodation);
                 realm.commitTransaction();
@@ -79,7 +80,6 @@ public class AccommodationService extends BaseService {
         realm.beginTransaction();
         realm.delete(Accommodation.class);
         realm.commitTransaction();
-
     }
 
     public ArrayList<Accommodation> getSavedAccomodations() {
@@ -101,12 +101,16 @@ public class AccommodationService extends BaseService {
     }
 
     public void saveAccommodation(Accommodation accommodation) {
+        Accommodation mSavedAccommodation = getSavedAccommodation(accommodation.getId());
         realm.beginTransaction();
+        if (mSavedAccommodation != null) {
+            accommodation.setFavorite(mSavedAccommodation.isFavorite());
+        }
         realm.copyToRealmOrUpdate(accommodation);
         realm.commitTransaction();
     }
 
-    public void saveFavoriteAccommodation(Accommodation mAccommodation, boolean isFavorite) {
+    public void saveOrUpdateFavoriteAccommodation(Accommodation mAccommodation, boolean isFavorite) {
         realm.beginTransaction();
         mAccommodation.setFavorite(isFavorite);
         realm.copyToRealmOrUpdate(mAccommodation);
@@ -143,7 +147,7 @@ public class AccommodationService extends BaseService {
                         mAccomodation.setCurrency(searchresult.pricingData.currency);
                         mAccomodations.add(mAccomodation);
                     }
-                    saveAccomodations(mAccomodations);
+                    saveorUpdateAccomodations(mAccomodations);
                     listener.onAccommodationListResult(mAccomodations);
                 }, throwable -> {
 

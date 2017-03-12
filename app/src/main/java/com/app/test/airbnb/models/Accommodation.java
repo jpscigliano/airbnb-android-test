@@ -15,12 +15,13 @@ public class Accommodation extends RealmObject implements Serializable {
 
     @PrimaryKey
     private int id;
-    private int price, capacity, beds,bedrooms,guest;
+    private int price, capacity, beds, bedrooms, guest;
     private String name, city, country, propertyType, roomType, currency, image, description;
 
     private double latitude, longitude;
     private float bathroom;
     private boolean isFavorite;
+
     public Accommodation() {
     }
 
@@ -40,8 +41,8 @@ public class Accommodation extends RealmObject implements Serializable {
         this.latitude = result.latitude;
         this.longitude = result.longitude;
         this.bathroom = result.bathroom;
-        this.guest=result.guest;
-        this.bedrooms=result.bedroom;
+        this.guest = result.guest;
+        this.bedrooms = result.bedroom;
     }
 
     public int getId() {
@@ -126,5 +127,47 @@ public class Accommodation extends RealmObject implements Serializable {
 
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
+    }
+
+    public void update(Accommodation accommodation) {
+        if (accommodation.getCurrency() != null && !accommodation.getCurrency().isEmpty()) {
+            this.currency = accommodation.getCurrency();
+        }
+        if (accommodation.getPropertyType() != null && !accommodation.getPropertyType().isEmpty()) {
+            this.propertyType = accommodation.getPropertyType();
+        }
+        if (accommodation.getPrice() != 0) {
+            this.price = accommodation.getPrice();
+        }
+        if (accommodation.getBathroom() != 0) {
+            this.bathroom = accommodation.getBathroom();
+        }
+        if (accommodation.getBeds() != 0) {
+            this.beds = accommodation.getBeds();
+        }
+        if (accommodation.getBedrooms() != 0) {
+            this.bedrooms = accommodation.getBedrooms();
+        }
+        if (accommodation.getGuest() != 0) {
+            this.guest = accommodation.getGuest();
+        }
+        if (accommodation.getDescription() != null && !accommodation.getDescription().isEmpty()) {
+            this.description = accommodation.getDescription();
+        }
+
+        if (accommodation.getLongitude() != 0) {
+            this.latitude = accommodation.getLatitude();
+        }
+        if (accommodation.getLongitude() != 0) {
+            this.longitude = accommodation.getLongitude();
+        }
+
+        if (accommodation.getRoomType() != null && !accommodation.getRoomType().isEmpty()) {
+            this.roomType = accommodation.getRoomType();
+        }
+        if (accommodation.getCity() != null && !accommodation.getCity().isEmpty()) {
+            this.city = accommodation.getCity();
+        }
+
     }
 }
