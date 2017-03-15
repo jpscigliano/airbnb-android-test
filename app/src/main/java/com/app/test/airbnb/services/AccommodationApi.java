@@ -21,8 +21,6 @@ public interface AccommodationApi {
     Observable<SearchAccomodationResponse<SearchDataResponse>> getAccommodationsByClientId(
             @Query("client_id") String Id,
             @Query("location") String location,
-            @Query("user_lat") String lat,
-            @Query("user_lng") String lon,
             @Query("_limit") int limit
     );
 

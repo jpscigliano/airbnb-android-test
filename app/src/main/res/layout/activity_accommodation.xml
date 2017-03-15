@@ -26,7 +26,8 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:id="@+id/imageView"/>
+                android:id="@+id/imageView"
+                android:scaleType="centerCrop" />
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -49,5 +50,7 @@
         android:src="@drawable/ic_menu_favorites_border"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end" />
+
+
 
 </android.support.design.widget.CoordinatorLayout>

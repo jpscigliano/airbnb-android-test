@@ -3,6 +3,10 @@
     package="com.app.test.airbnb">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+
 
     <application
         android:name=".Airbnb"
@@ -11,6 +15,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCiK_2ka16emMCTIJHpA_MDklGwkz7p0do" />
+
         <activity
             android:name=".activities.LoginActivity"
             android:screenOrientation="portrait">
@@ -28,7 +36,8 @@
         <activity
             android:name=".activities.AccommodationActivity"
             android:label="@string/title_activity_accommodation"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

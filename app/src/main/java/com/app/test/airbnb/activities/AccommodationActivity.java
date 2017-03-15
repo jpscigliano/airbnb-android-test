@@ -13,12 +13,19 @@ import android.widget.TextView;
 import com.app.test.airbnb.R;
 import com.app.test.airbnb.models.Accommodation;
 import com.app.test.airbnb.services.AccommodationService;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AccommodationActivity extends AppCompatActivity {
+public class AccommodationActivity extends AppCompatActivity implements OnMapReadyCallback {
     private int accommodationId;
 
 
@@ -30,7 +37,7 @@ public class AccommodationActivity extends AppCompatActivity {
     ImageView image;
 
     @BindView(R.id.title)
-    TextView title ;
+    TextView title;
     @BindView(R.id.subttitle)
     TextView subTitle;
     @BindView(R.id.price)
@@ -46,6 +53,10 @@ public class AccommodationActivity extends AppCompatActivity {
     @BindView(R.id.description)
     TextView description;
 
+    @BindView(R.id.map)
+    MapView map;
+
+    Accommodation mAccommodation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,27 +67,29 @@ public class AccommodationActivity extends AppCompatActivity {
 
         accommodationId = getIntent().getExtras().getInt(Accommodation.KEY);
 
-        Accommodation mAccommodation = AccommodationService.getInstance().getSavedAccommodation(accommodationId);
+        mAccommodation = AccommodationService.getInstance().getSavedAccommodation(accommodationId);
+        map.onCreate(savedInstanceState);
+        map.getMapAsync(this);
 
-        if(mAccommodation.isFavorite()){
+        if (mAccommodation.isFavorite()) {
             favorites.setImageResource(R.drawable.ic_menu_favorites);
-        }else{
+        } else {
             favorites.setImageResource(R.drawable.ic_menu_favorites_border);
         }
 
         favorites.setOnClickListener(view -> {
 
-          if(!mAccommodation.isFavorite()){
-              favorites.setImageResource(R.drawable.ic_menu_favorites);
-              Snackbar.make(view, R.string.addTofavorite, Snackbar.LENGTH_LONG)
-                      .setAction("Action", null).show();
-          }else{
-              favorites.setImageResource(R.drawable.ic_menu_favorites_border);
-              Snackbar.make(view, R.string.removeTofavorite, Snackbar.LENGTH_LONG)
-                      .setAction("Action", null).show();
-          }
+            if (!mAccommodation.isFavorite()) {
+                favorites.setImageResource(R.drawable.ic_menu_favorites);
+                Snackbar.make(view, R.string.addTofavorite, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            } else {
+                favorites.setImageResource(R.drawable.ic_menu_favorites_border);
+                Snackbar.make(view, R.string.removeTofavorite, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
 
-            AccommodationService.getInstance().saveOrUpdateFavoriteAccommodation(mAccommodation,!mAccommodation.isFavorite());
+            AccommodationService.getInstance().saveOrUpdateFavoriteAccommodation(mAccommodation, !mAccommodation.isFavorite());
 
         });
 
@@ -86,11 +99,11 @@ public class AccommodationActivity extends AppCompatActivity {
 
         title.setText(mAccommodation.getName());
         subTitle.setText(mAccommodation.getPropertyType());
-        price.setText(""+mAccommodation.getPrice()+" "+mAccommodation.getCurrency());
-        beds.setText(""+mAccommodation.getBeds());
-        bathroom.setText(""+mAccommodation.getBathroom());
-        guest.setText(""+mAccommodation.getGuest());
-        bedrooms.setText(""+mAccommodation.getBedrooms());
+        price.setText("" + mAccommodation.getPrice() + " " + mAccommodation.getCurrency());
+        beds.setText("" + mAccommodation.getBeds());
+        bathroom.setText("" + mAccommodation.getBathroom());
+        guest.setText("" + mAccommodation.getGuest());
+        bedrooms.setText("" + mAccommodation.getBedrooms());
         description.setText(mAccommodation.getDescription());
 
     }
@@ -115,5 +128,40 @@ public class AccommodationActivity extends AppCompatActivity {
         extras.putInt(Accommodation.KEY, mAccommodation.getId());
         intent.putExtras(extras);
         activity.startActivity(intent);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        LatLng accommodatioLoc = new LatLng(mAccommodation.getLatitude(), mAccommodation.getLongitude());
+        googleMap.addMarker(new MarkerOptions().position(accommodatioLoc)
+                .title(mAccommodation.getName()));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(accommodatioLoc));
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+        googleMap.animateCamera(zoom);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        map.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        map.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        map.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        map.onLowMemory();
     }
 }

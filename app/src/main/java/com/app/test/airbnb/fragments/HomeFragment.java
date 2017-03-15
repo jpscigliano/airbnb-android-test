@@ -27,9 +27,6 @@ public class HomeFragment extends Fragment {
 
     public static final String TAG = HomeFragment.class.getName();
 
-
-
-
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
@@ -82,6 +79,7 @@ public class HomeFragment extends Fragment {
             progressDialog.dismiss();
         });
     }
+
 
 
 }

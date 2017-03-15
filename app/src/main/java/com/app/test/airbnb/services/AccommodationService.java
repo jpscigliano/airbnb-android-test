@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.app.test.airbnb.models.Accommodation;
 import com.app.test.airbnb.services.response.SearchDataResponse;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,8 @@ public class AccommodationService extends BaseService {
     public AccommodationApi mApi;
     private final static String cliente_id = "3092nxybyb0otqw18e8nh5nty";
     private final static String formatListing = "v1_legacy_for_p3";
+
+    public final static String defaultLocation ="Los Angeles";
     private Realm realm;
 
 
@@ -132,10 +135,9 @@ public class AccommodationService extends BaseService {
         return mAccommodation;
     }
 
-    public void searchAccomodations(final SearchAccommodationListListener listener) {
+    public void searchAccomodations(String city, final SearchAccommodationListListener listener) {
 
-
-        mApi.getAccommodationsByClientId(cliente_id, "Buenos Aires", null, null, 30).
+        mApi.getAccommodationsByClientId(cliente_id,city, 30).
                 subscribeOn(Schedulers.newThread()).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(response -> {
@@ -154,6 +156,15 @@ public class AccommodationService extends BaseService {
                     Log.d("Response", "Response Error: " + throwable.toString());
                 });
     }
+
+    public void searchAccomodations(SearchAccommodationListListener listener) {
+        searchAccomodations(
+                defaultLocation,
+                listener);
+    }
+
+
+
 
     public void fetchAccomodationById(int id, FetchAccommodationistener listener) {
         mApi.getAccommodationById(id, cliente_id, formatListing).
