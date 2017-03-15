@@ -10,6 +10,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.app.test.airbnb.R;
 import com.app.test.airbnb.activities.base.BaseAppCompatActivity;
@@ -17,6 +19,8 @@ import com.app.test.airbnb.activities.base.NavigationCallback;
 import com.app.test.airbnb.fragments.FavoritesFragment;
 import com.app.test.airbnb.fragments.HomeFragment;
 import com.app.test.airbnb.fragments.MapFragment;
+import com.facebook.Profile;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +34,11 @@ public class MainActivity extends BaseAppCompatActivity
     DrawerLayout drawer;
     @BindView(R.id.nav_view)
     NavigationView navigationView;
+
+  //  @BindView(R.id.imageViewHeader)
+    ImageView imageViewUser;
+  //  @BindView(R.id.nameHeader)
+    TextView nameUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +56,18 @@ public class MainActivity extends BaseAppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
         goToHome();
+        setupUserLoginUI();
+    }
+
+    private void setupUserLoginUI() {
+        imageViewUser=(ImageView)navigationView.getHeaderView(0).findViewById(R.id.imageViewHeader);
+        nameUser=(TextView)navigationView.getHeaderView(0).findViewById(R.id.nameHeader);
+        Profile profile = Profile.getCurrentProfile();
+        if(profile!=null) {
+            Picasso.with(this).load(profile.getProfilePictureUri(100, 100)).into(imageViewUser);
+            nameUser.setText(profile.getFirstName()+" "+ profile.getLastName());
+        }
+
     }
 
     @Override

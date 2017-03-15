@@ -1,4 +1,7 @@
 <resources>
+
+    <string name="app_id_FB">1873360249613092</string>
+
     <string name="app_name">airbnb</string>
     <string name="title_activity_main">MainActivity</string>
 
@@ -16,6 +19,10 @@
     <string name="addTofavorite">Se ha agregado este alojamiento a favoritos.</string>
     <string name="removeTofavorite">Se ha quitado este alojamiento de favoritos.</string>
     <string name="title_activity_accommodation">Detail</string>
+
+    <string name="login"> Inicia sesión</string>
+    <string name="cancel_FB"> Intente  Iniciar sesión</string>
+    <string name="error_FB"> Ocurrio un error Intente luego</string>
 
 
     <string name="beds">Beds</string>
