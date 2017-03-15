@@ -72,19 +72,19 @@ public class AccommodationActivity extends AppCompatActivity implements OnMapRea
         map.getMapAsync(this);
 
         if (mAccommodation.isFavorite()) {
-            favorites.setImageResource(R.drawable.ic_menu_favorites);
+            favorites.setImageResource(R.mipmap.ic_favorite_white);
         } else {
-            favorites.setImageResource(R.drawable.ic_menu_favorites_border);
+            favorites.setImageResource((R.mipmap.ic_favorite_border_white));
         }
 
         favorites.setOnClickListener(view -> {
 
             if (!mAccommodation.isFavorite()) {
-                favorites.setImageResource(R.drawable.ic_menu_favorites);
+                favorites.setImageResource(R.mipmap.ic_favorite_white);
                 Snackbar.make(view, R.string.addTofavorite, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             } else {
-                favorites.setImageResource(R.drawable.ic_menu_favorites_border);
+                favorites.setImageResource((R.mipmap.ic_favorite_border_white));
                 Snackbar.make(view, R.string.removeTofavorite, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }

@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.app.test.airbnb.models.Accommodation;
 import com.app.test.airbnb.services.response.SearchDataResponse;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
@@ -26,16 +25,18 @@ public class AccommodationService extends BaseService {
     private final static String cliente_id = "3092nxybyb0otqw18e8nh5nty";
     private final static String formatListing = "v1_legacy_for_p3";
 
-    public final static String defaultLocation ="Los Angeles";
+    public final static String defaultLocation = "Los Angeles";
     private Realm realm;
 
 
     public interface SearchAccommodationListListener {
         void onAccommodationListResult(ArrayList<Accommodation> mAccommodations);
+        void onError();
     }
 
     public interface FetchAccommodationistener {
         void onAccommodationResult(Accommodation mAccomodations);
+        void onError();
     }
 
     public static AccommodationService getInstance() {
@@ -137,7 +138,7 @@ public class AccommodationService extends BaseService {
 
     public void searchAccomodations(String city, final SearchAccommodationListListener listener) {
 
-        mApi.getAccommodationsByClientId(cliente_id,city, 30).
+        mApi.getAccommodationsByClientId(cliente_id, city, 30).
                 subscribeOn(Schedulers.newThread()).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(response -> {
@@ -152,7 +153,7 @@ public class AccommodationService extends BaseService {
                     saveorUpdateAccomodations(mAccomodations);
                     listener.onAccommodationListResult(mAccomodations);
                 }, throwable -> {
-
+                    listener.onError();
                     Log.d("Response", "Response Error: " + throwable.toString());
                 });
     }
@@ -162,8 +163,6 @@ public class AccommodationService extends BaseService {
                 defaultLocation,
                 listener);
     }
-
-
 
 
     public void fetchAccomodationById(int id, FetchAccommodationistener listener) {
@@ -178,6 +177,7 @@ public class AccommodationService extends BaseService {
                     }
 
                 }, throwable -> {
+                    listener.onError();
                     Log.d("Response", "Response Error: " + throwable.toString());
                 });
 

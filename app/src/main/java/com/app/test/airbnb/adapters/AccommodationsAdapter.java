@@ -36,6 +36,11 @@ public class AccommodationsAdapter extends RecyclerView.Adapter<AccommodationsAd
         this.mContext = mContext;
         this.listener = listener;
     }
+    public AccommodationsAdapter( Context mContext, ItemSelecListener listener) {
+
+        this.mContext = mContext;
+        this.listener = listener;
+    }
 
     @Override
     public AccommodationsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -56,9 +61,13 @@ public class AccommodationsAdapter extends RecyclerView.Adapter<AccommodationsAd
 
     @Override
     public int getItemCount() {
-        return mAccommodations.size();
+        return mAccommodations==null?0:mAccommodations.size();
     }
 
+    public void setmAccommodations(ArrayList<Accommodation> mAccommodations) {
+        this.mAccommodations = mAccommodations;
+        notifyDataSetChanged();
+    }
 
     public class AccommodationsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.imageView)

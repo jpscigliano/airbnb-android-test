@@ -12,6 +12,7 @@
     <string name="favorites">Favorites</string>
     <string name="searching">Buscando</string>
     <string name="loadingAccommodation">Cargando Alojamiento</string>
+    <string name="error_accommodation">Ha ocurrido un error intento luego</string>
     <string name="addTofavorite">Se ha agregado este alojamiento a favoritos.</string>
     <string name="removeTofavorite">Se ha quitado este alojamiento de favoritos.</string>
     <string name="title_activity_accommodation">Detail</string>

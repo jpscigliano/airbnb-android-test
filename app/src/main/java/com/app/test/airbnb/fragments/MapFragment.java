@@ -50,7 +50,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
 
     public static final String TAG = MapFragment.class.getName();
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1010;
+
 
     @BindView(R.id.map)
     MapView mapView;
@@ -107,7 +107,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+            case PermissionUtils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
 
                 if (PermissionUtils.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getContext())) {
                     fetchLocationData();
@@ -130,7 +130,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             return true;
         });
 
-        mGoogleApiClient.connect();
+        if (PermissionUtils.isLocationEnabled(getContext())) {
+            if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.connect();
+            }
+        } else {
+            getDefaultAccommodationsOnMap(mMap);
+        }
 
     }
 
@@ -151,7 +157,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
         } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PermissionUtils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
 
 
@@ -165,26 +171,46 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
 
             if (addresses.size() > 0) {
-                AccommodationService.getInstance().searchAccomodations(
-                        addresses.get(0).getLocality(),
-                        MapFragment.this::createMarkersOnMap);
+                AccommodationService.getInstance().searchAccomodations(addresses.get(0).getLocality(),
+                        new AccommodationService.SearchAccommodationListListener() {
+                            @Override
+                            public void onAccommodationListResult(ArrayList<Accommodation> mAccommodations) {
+                                createMarkersOnMap(mAccommodations);                            }
+
+                            @Override
+                            public void onError() {
+                                Toast.makeText(getContext(), R.string.error_accommodation, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
 
             } else {
-                AccommodationService.getInstance().searchAccomodations(mAccommodations -> {
-                    createMarkersOnMap(mAccommodations);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mAccommodations.get(0).getLatitude(), mAccommodations.get(0).getLongitude()), DEFAULT_ZOOM));
-                });
+                getDefaultAccommodationsOnMap(mMap);
             }
 
         } catch (IOException e) {
             Log.d(TAG, "Current location is null. Using defaults.");
-            AccommodationService.getInstance().searchAccomodations(mAccommodations -> {
-                createMarkersOnMap(mAccommodations);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mAccommodations.get(0).getLatitude(), mAccommodations.get(0).getLongitude()), DEFAULT_ZOOM));
-            });
+            getDefaultAccommodationsOnMap(mMap);
 
         }
 
+    }
+
+    private void getDefaultAccommodationsOnMap(GoogleMap mMap) {
+        AccommodationService.getInstance().searchAccomodations(new AccommodationService.SearchAccommodationListListener() {
+            @Override
+            public void onAccommodationListResult(ArrayList<Accommodation> mAccommodations) {
+                createMarkersOnMap(mAccommodations);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mAccommodations.get(0).getLatitude(), mAccommodations.get(0).getLongitude()), DEFAULT_ZOOM));
+
+            }
+
+            @Override
+            public void onError() {
+                Toast.makeText(getContext(), R.string.error_accommodation, Toast.LENGTH_LONG).show();
+
+            }
+        });
     }
 
     private void createMarkersOnMap(ArrayList<Accommodation> mAccommodations) {
@@ -211,6 +237,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         super.onResume();
         mapView.onResume();
 
+        if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
+
+
     }
 
     @Override
@@ -228,6 +259,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         mapView.onDestroy();
         mGoogleApiClient.stopAutoManage(getActivity());
         mGoogleApiClient.disconnect();
+
     }
 
     @Override
@@ -236,6 +268,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         mapView.onLowMemory();
     }
 
+    @Override
+    public void onStop() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.stopAutoManage(getActivity());
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
+    }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -254,9 +294,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         progressDialog.setMessage(getString(R.string.loadingAccommodation));
         progressDialog.show();
 
-        AccommodationService.getInstance().fetchAccomodationById(accommodationId, mAccomodation -> {
-            AccommodationActivity.start(mAccomodation, MapFragment.this.getActivity());
-            progressDialog.dismiss();
+        AccommodationService.getInstance().fetchAccomodationById(accommodationId, new AccommodationService.FetchAccommodationistener() {
+            @Override
+            public void onAccommodationResult(Accommodation mAccomodation) {
+                AccommodationActivity.start(mAccomodation, MapFragment.this.getActivity());
+                progressDialog.dismiss();
+            }
+            @Override
+            public void onError() {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), R.string.error_accommodation, Toast.LENGTH_LONG).show();
+
+            }
         });
 
         return false;
