@@ -1,10 +1,8 @@
 package com.app.test.airbnb.services;
 
-import com.app.test.airbnb.models.Accommodation;
 import com.app.test.airbnb.services.response.AccommodationResponse;
 import com.app.test.airbnb.services.response.SearchAccomodationResponse;
 import com.app.test.airbnb.services.response.SearchDataResponse;
-import com.app.test.airbnb.services.response.data.ListingDataResult;
 
 import retrofit2.http.GET;
 import retrofit2.http.Path;

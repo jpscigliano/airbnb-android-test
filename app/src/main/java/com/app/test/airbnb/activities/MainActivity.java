@@ -19,6 +19,7 @@ import com.app.test.airbnb.activities.base.NavigationCallback;
 import com.app.test.airbnb.fragments.FavoritesFragment;
 import com.app.test.airbnb.fragments.HomeFragment;
 import com.app.test.airbnb.fragments.MapFragment;
+import com.app.test.airbnb.models.Accommodation;
 import com.facebook.Profile;
 import com.squareup.picasso.Picasso;
 
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends BaseAppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationCallback {
 
+    public static final String COME_FROM_PUSH = "come_from_push";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.drawer_layout)
@@ -35,9 +37,8 @@ public class MainActivity extends BaseAppCompatActivity
     @BindView(R.id.nav_view)
     NavigationView navigationView;
 
-  //  @BindView(R.id.imageViewHeader)
+
     ImageView imageViewUser;
-  //  @BindView(R.id.nameHeader)
     TextView nameUser;
 
     @Override
@@ -45,6 +46,12 @@ public class MainActivity extends BaseAppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        if (getIntent().getExtras() != null) {
+            if (getIntent().getExtras().getBoolean(COME_FROM_PUSH, false)) {
+                AccommodationActivity.start(new Accommodation(getIntent().getExtras().getInt(Accommodation.KEY)), this);
+            }
+        }
 
 
         setSupportActionBar(toolbar);
@@ -60,12 +67,12 @@ public class MainActivity extends BaseAppCompatActivity
     }
 
     private void setupUserLoginUI() {
-        imageViewUser=(ImageView)navigationView.getHeaderView(0).findViewById(R.id.imageViewHeader);
-        nameUser=(TextView)navigationView.getHeaderView(0).findViewById(R.id.nameHeader);
+        imageViewUser = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.imageViewHeader);
+        nameUser = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nameHeader);
         Profile profile = Profile.getCurrentProfile();
-        if(profile!=null) {
+        if (profile != null) {
             Picasso.with(this).load(profile.getProfilePictureUri(100, 100)).into(imageViewUser);
-            nameUser.setText(profile.getFirstName()+" "+ profile.getLastName());
+            nameUser.setText(profile.getFirstName() + " " + profile.getLastName());
         }
 
     }

@@ -1,5 +1,6 @@
 package com.app.test.airbnb.fragments;
 
+import android.app.PendingIntent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,7 @@ public class FavoritesFragment extends Fragment {
     RecyclerView mRecyclerView;
 
     private AccommodationsAdapter mAccommodationAdapter;
+    private PendingIntent mGeofencePendingIntent;
 
     public static Fragment newInstace() {
         FavoritesFragment fragment = new FavoritesFragment();
@@ -53,5 +55,9 @@ public class FavoritesFragment extends Fragment {
                 mAccommodation -> AccommodationActivity.start(mAccommodation, getActivity()));
         mRecyclerView.setAdapter(mAccommodationAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
     }
+
+
 }

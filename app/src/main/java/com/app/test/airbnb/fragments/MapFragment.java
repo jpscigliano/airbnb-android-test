@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Toast;
 
 import com.app.test.airbnb.R;
@@ -66,6 +67,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestPermision();
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,7 +120,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 if (PermissionUtils.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getContext())) {
                     fetchLocationData();
                 } else {
-                    Toast.makeText(getContext(), "Permission Denied, You cannot access location data.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getString(R.string.error_permission_location)+" "+getString(R.string.show_default_CA), Toast.LENGTH_LONG).show();
                 }
                 break;
 
@@ -157,7 +165,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
         } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PermissionUtils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+             getDefaultAccommodationsOnMap(mMap);
         }
 
 
@@ -311,4 +319,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         return false;
     }
 
+    public void requestPermision() {
+        if (!PermissionUtils.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getContext())) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PermissionUtils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
 }

@@ -12,10 +12,10 @@
 
     <string name="home">Home</string>
     <string name="map">Map</string>
-    <string name="favorites">Favorites</string>
+    <string name="favorites">Favoritos</string>
     <string name="searching">Buscando</string>
     <string name="loadingAccommodation">Cargando Alojamiento</string>
-    <string name="error_accommodation">Ha ocurrido un error intento luego</string>
+    <string name="error_accommodation">Ha ocurrido un error intente luego</string>
     <string name="addTofavorite">Se ha agregado este alojamiento a favoritos.</string>
     <string name="removeTofavorite">Se ha quitado este alojamiento de favoritos.</string>
     <string name="title_activity_accommodation">Detail</string>
@@ -30,4 +30,20 @@
     <string name="guest">Guest</string>
     <string name="bedrooms">Berdooms</string>
 
+
+    <string name="close_to_favorite">Estas cerca de un alojamiento de tu lista de favoritos.</string>
+    <string name="error_permission_location">Permiso denegado, no puedes acceder a tu ubicacion.</string>
+    <string name="error_geofence"> No se podra generar alertas (GEOFENCE).</string>
+    <string name="show_default_CA"> Se mostraran los alojamientos de los Angeles, CA.</string>
+
+
+    <string name="not_connected">GoogleApiClient no yet connected. Try again.</string>
+    <string name="geofence_not_available">Geofence service is not available now</string>
+    <string name="geofence_too_many_geofences">Your app has registered too many geofences</string>
+    <string name="geofence_too_many_pending_intents">You have provided too many PendingIntents to the addGeofences() call</string>
+    <string name="unknown_geofence_error">Unknown error: the Geofence service is not available now    </string>
+    <string name="geofence_transition_invalid_type">Geofence transition error: invalid transition type %1$d    </string>
+    <string name="geofence_transition_entered">Entered</string>
+    <string name="geofence_transition_exited">Exited</string>
+    <string name="unknown_geofence_transition">Unknown Transition</string>
 </resources>

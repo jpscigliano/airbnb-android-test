@@ -24,6 +24,9 @@ public class Accommodation extends RealmObject implements Serializable {
 
     public Accommodation() {
     }
+    public Accommodation(int id) {
+        this.id=id;
+    }
 
     public Accommodation(ListingDataResult result) {
         this.id = result.id;

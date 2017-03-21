@@ -1,6 +1,5 @@
 package com.app.test.airbnb.services.response.base;
 
-import com.app.test.airbnb.services.response.base.ErrorResponse;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;

@@ -60,7 +60,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.OnConnecti
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        requestPermision();
 
     }
 
@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.OnConnecti
                 if (PermissionUtils.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getContext())) {
                     fetchLocationData();
                 } else {
-                    Toast.makeText(getContext(), "Permission Denied, You cannot access location data.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getString(R.string.error_permission_location)+" "+getString(R.string.show_default_CA), Toast.LENGTH_LONG).show();
                     getDefaultAccommodations();
                 }
                 break;
@@ -142,7 +142,6 @@ public class HomeFragment extends Fragment implements GoogleApiClient.OnConnecti
 
         if (PermissionUtils.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getContext())) {
             if (mGoogleApiClient.isConnected()) {
-
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, request, location -> {
                     if (lastLocation == null || lastLocation != location) {
                         lastLocation = location;
@@ -153,11 +152,16 @@ public class HomeFragment extends Fragment implements GoogleApiClient.OnConnecti
                 });
             }
         } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PermissionUtils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            getDefaultAccommodations();
         }
 
     }
 
+    public void requestPermision() {
+        if (!PermissionUtils.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getContext())) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PermissionUtils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
 
     private void getAccomodationsAndUpdateList(Location location) {
 
@@ -216,7 +220,6 @@ public class HomeFragment extends Fragment implements GoogleApiClient.OnConnecti
             @Override
             public void onAccommodationListResult(ArrayList<Accommodation> mAccommodations) {
                 mAccommodationAdapter.setmAccommodations(mAccommodations);
-
                 progressDialog.dismiss();
             }
 
